@@ -1,6 +1,6 @@
 language: node_js
+install: true
 node_js:
-  - '6.0'
   - '8.0'
   - '10.0'
 script: npm run test

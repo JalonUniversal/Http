@@ -11,18 +11,20 @@ function http(option) {
 		};
 		option = Object.assign({}, defaultOption, option);
 
-		let { method, url, async, success, failed, data, headers, timeout} = option;
+		let { 
+			method, 
+			url, 
+			async,
+			success: successCallBack, 
+			failed: failedCallBack, 
+			data: sendData, 
+			headers, 
+			timeout
+		} = option;
 
 		let xhr;
 		let result;
-		let method = method.toLowerCase();
-		let url = url;
-		let async = async;
-		let successCallBack = success;
-		let failedCallBack = failed;
-		let sendData = data || null;
-		let headers = headers || null;
-		let timeout = timeout || 0;
+		method = method.toLowerCase();
 		let queryStr = formateQuery(sendData);
 		let postData = null;
 	
@@ -64,7 +66,7 @@ function http(option) {
 			url = `${url}&${Date.now()}`
 			postData = queryStr;
 		}
-		
+
 		xhr.send(postData);
 }
 
