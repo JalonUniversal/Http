@@ -1,14 +1,10 @@
-function http(option) {
-		const defaultOption = {
-			url: '',
-			method: 'get',
-			async: true,
-			success: () => {},
-			failed: () => {},
-			data: null,
-			headers: null,
-			timeout: 0
-		};
+import {
+  defaultOption,
+  formateQuery,
+  throwError
+} from './utils';
+
+export function http(option) {
 		option = Object.assign({}, defaultOption, option);
 
 		let { 
@@ -29,7 +25,7 @@ function http(option) {
 		let postData = null;
 	
 		if(!window.hasOwnProperty('XMLHttpRequest')) {
-			throwError('Your browser is too old, does not support XMLHttpRequest Ojbect');
+			throwError('Your browser does not support XMLHttpRequest Ojbect');
 		}
 		// 实例化 XMLHttpRequest
 		xhr = new XMLHttpRequest();
@@ -38,7 +34,7 @@ function http(option) {
 			if(xhr.readyState === 4) {
 				if(xhr.status >= 200 && xhr.status < 300) {
 					result = JSON.parse(xhr.responseText);
-					successCallBack(result);
+					successCallBack && successCallBack(result);
 				}
 			}
 		}
@@ -48,7 +44,7 @@ function http(option) {
 		}
 		// 监听请求失败事件
 		xhr.onerror = (error) => {
-			failedCallBack(error)
+			failedCallBack && failedCallBack(error);
 		}
 		
 		if(method === 'get') { url = `${url}?${queryStr}`}
@@ -59,7 +55,7 @@ function http(option) {
 			postData = null;
 			if(headers) {
 				for (let k in headers) {
-					xhr.setRequestHeader(`${k}`, `${headers[k]}`);
+					xhr.setRequestHeader(k, headers[k]);
 				}
 			}
 		} else if(method === 'get') {
@@ -70,23 +66,4 @@ function http(option) {
 		xhr.send(postData);
 }
 
-/**
- * 将数据转换为querystring的形式 
- * eg. { name: 'abc', job: 'doctor'} => "name=abc&job=doctor"
- * @param {Object} object
- */
-function formateQuery(object) {
-	if(!object) return '';
-	let result = '';
-	Object.keys(object).forEach(key => {
-		result += `${key}=${object[key]}&`;
-	});
-	return result.substring(0, result.length - 1);
-}
 
-/**
- * 抛出错误事件
- */
-function throwError(errorMessage) {
-	throw new Error(`[Error] ${errorMessage}`);
-}
